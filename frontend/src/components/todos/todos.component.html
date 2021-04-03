@@ -1,0 +1,60 @@
+<div class="contentContainer">
+
+  <table *ngIf="data.length > 0" mat-table [dataSource]="data" class="todoTable mat-elevation-z1">
+
+    <ng-container matColumnDef="position">
+      <th mat-header-cell *matHeaderCellDef id="header-no"> No. </th>
+      <td mat-cell *matCellDef="let i = index"> {{i+1}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef id="header-description"> Beschreibung </th>
+      <td mat-cell *matCellDef="let element"> {{element.description}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef id="header-buttons"></th>
+      <td mat-cell *matCellDef="let element">
+        <div style="display: flex; justify-content: flex-end">
+          <button mat-button *ngIf="!element.done" (click)="done(element)" style="margin-right: 10px">
+            Fertig
+          </button>
+          <button mat-button (click)="delete(element)">
+            Löschen
+          </button>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row;
+        columns: displayedColumns;"
+        [ngClass]="{'done': row.done}"></tr>
+
+  </table>
+
+  <mat-card *ngIf="data.length == 0" class="noTodoCard">
+    <mat-card-title>
+      Du hast aktuelle keine Todos :)
+    </mat-card-title>
+    <label>
+      Genieß deinen Tag!
+    </label>
+  </mat-card>
+
+  <mat-card class="newTodoContainer">
+    <mat-card-title>
+      Neues Todo:
+    </mat-card-title>
+    <mat-form-field appearance="legacy" style="padding: 0; margin-top: 20px">
+      <mat-label>Beschreibung</mat-label>
+      <label>
+        <input matInput placeholder="" [(ngModel)]="newTodoDescription" (keyup.enter)="create()" >
+      </label>
+    </mat-form-field>
+    <button mat-button style="margin-left: 30px" (click)="create()">
+      Erstellen
+    </button>
+  </mat-card>
+
+</div>

@@ -1,0 +1,34 @@
+name: Build and Publish
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  IMAGE: 'eu.gcr.io/thale-240517/seminar'
+
+jobs:
+  setup-build-publish:
+    name: Setup, Build and Publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Google Cloud Platform (GCP) CLI - gcloud
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          version: '318.0.0'
+          service_account_email: ${{ secrets.GOOGLE_SERVICEACCOUNT_EMAIL }}
+          service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+
+      - name: Create docker image
+        run: |
+          TAG=${GITHUB_REF##*/}.${{github.run_number}}
+          # configure docker to use Google Container Registry
+          gcloud auth configure-docker
+          # docker build and push
+          docker build -t ${IMAGE}:${TAG} -t ${IMAGE}:LATEST .
+          docker push ${IMAGE} --all-tags
+          gcloud run services update mean --project thale-240517 --image=${IMAGE}:LATEST --platform managed --region europe-west1
